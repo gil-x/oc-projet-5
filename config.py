@@ -6,6 +6,9 @@ HOST = "localhost"
 DATABASE = "off_0"
 CHARSET = "charset=utf8"
 
+# Categories
+CATEGORIES = ["Salty snacks", "Cheeses", "Beverage", "Sauces", "Biscuits"]
+
 # API informations
 BASE_API = "https://fr.world.openfoodfacts.org/"
 SSL_API = "https://ssl-api.openfoodfacts.org"

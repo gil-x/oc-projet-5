@@ -1,11 +1,12 @@
 import records
 import pprint
 
+from config import *
+
 class DataManager:
     """Read and write the database."""
 
     def __init__(self, user, password, host, database, charset="charset=utf8"):
-        # self.db = records.Database('mysql+pymysql://sqgil:pass@localhost/off_0?charset=utf8')
         self.db = records.Database("mysql+pymysql://{}:{}@{}/{}?{}".format(
                 user,
                 password,
@@ -13,6 +14,8 @@ class DataManager:
                 database,
                 charset)
                 )
+        # self.categories = CATEGORIES
+        self.categories = ["Salty snacks", "Cheeses", "Beverage", "Sauces", "Biscuits"]
 
     def build_db(self):
         """Create the tables."""
@@ -39,6 +42,7 @@ class DataManager:
             grade CHAR(1) NOT NULL,
             url VARCHAR(255) NOT NULL,
             store VARCHAR(255),
+            categories VARCHAR(255),
             category SMALLINT UNSIGNED NOT NULL,
             -- favorite CHAR(1) NOT NULL,
             CONSTRAINT fk_cat_product
@@ -67,55 +71,46 @@ class DataManager:
         ENGINE=INNODB;
         """)
 
-    def add_category(self, category):
-        self.db.query("""
-            INSERT INTO Category (name)
-            VALUES(:name)
-            """,
-            name=category
-            )
+    def add_category(self, categories):
+        for category in categories:
+            self.db.query("""
+                INSERT INTO Category (name)
+                VALUES(:name)
+                """,
+                name=category
+                )
 
-    def add_products(self, products):
+    def add_products(self, products, category):
+
+        # DEBUG:
         printer = pprint.PrettyPrinter(indent=2)
+        total_products = len(products)
+        valid_products = 0
+
         for product in products:
-            # printer.pprint(product)
-            # print(type(product))
-            # print("product_name_fr:", product["product_name_fr"])
-            # print("nutrition_grades:", product["nutrition_grades"])
-            # print("stores:", product["stores"])
+            print("self.categories:", self.categories)
             try:
                 self.db.query("""
-                    INSERT INTO Product (name, barcode, grade, url, store, category)
-                    VALUES(:name, :barcode, :grade, :url, :store, :category)
+                    INSERT INTO Product (name, barcode, grade, url, store, category, categories)
+                    VALUES(:name, :barcode, :grade, :url, :store, :category, :categories)
                     """,
                     name=product["product_name_fr"],
                     barcode=product["code"],
                     grade=product["nutrition_grades"],
                     url=product["url"],
                     store=product["stores"],
-                    category=1
+                    categories=product["categories"],
+                    category=self.categories.index(category) + 1
                     )
                 print("{} added.".format(product["product_name_fr"]))
+                valid_products += 1
             except KeyError:
                 print("Key error")
 
+        print("Registered products: {}/{}".format(valid_products, total_products))
 
-        # self.db.query("""
-        # INSERT INTO Product (name, barcode, grade, url, store, category)
-        # VALUES(:name, :barcode, :grade, :url, :store, :category)
-        # """,
-        # # pk=pk,
-        # name="name",
-        # barcode="0123456789123",
-        # grade="e",
-        # url="url",
-        # store="store",
-        # category=1
-        # )
-
-
-
-
+    def random_pick(self, number, category):
+        pass
 
 
     def clean_products(self):
@@ -125,46 +120,3 @@ class DataManager:
         )
         ENGINE=INNODB;
         """)
-
-    # def delete_all_tables(self):
-    #     self.db.query("""
-    #     DROP TABLE Category;
-    #     """)
-
-
-
-#
-#         CREATE TABLE Animal (
-#             id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-#             espece VARCHAR(40) NOT NULL,
-#             sexe CHAR(1),
-#             date_naissance DATETIME NOT NULL,
-#             nom VARCHAR(30),
-#             commentaires TEXT,
-#             PRIMARY KEY (id)
-#         )
-#         ENGINE=INNODB;
-#
-#
-#
-#
-#
-# class DatabaseManager(self):
-#     def __init__(self):
-#
-#
-# db.query("""
-# CREATE TABLE IF NOT EXISTS Product (
-#     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-#     name VARCHAR(100) NOT NULL,
-#     barcode CHAR(13) NOT NULL,
-#     grade CHAR(1) NOT NULL,
-#     url VARCHAR(255) NOT NULL,
-#     store VARCHAR(255) NOT NULL,
-#     PRIMARY KEY (id)
-# )
-# ENGINE=INNODB;
-# """)
-#
-#
-# db = records.Database('mysql+pymysql://sqgil:pass@localhost/off_0?charset=utf8')

@@ -5,23 +5,20 @@ import note
 from config import *
 
 class ApiFisherman:
-    """This talk to the API, gets the """
+    """This class talk to the OFF api, gets the stuff."""
 
     def __init__(self):
         pass
 
-    def fish_category(self):
+    def fetch_category(self, category):
+        print("category in fetch_category:", category)
         args = {
             'action': "process",
             'tagtype_0': "categories",
             'tag_contains_0': "contains",
-            'tag_0': "Seafood",
+            'tag_0': category,
             'json': 1,
-            # 'search_terms': "*",
-            # 'category': 'Cheeses',
-            # 'page_size': 10000,
-            # 'search_simple': 1,
-            # 'process': "process",
+            'page_size': 1000,
             }
         response = requests.get(ADV_API, params=args)
 
@@ -30,23 +27,27 @@ class ApiFisherman:
         monLog.addLine(requested)
 
         response_json = response.json()["products"]
+
+        # DEBUG
         products_total = (len(response_json))
         products_valids = []
+
+        required_keys = [
+            "product_name_fr",
+            "code",
+            "url",
+            "categories",
+            "nutrition_grades",
+            "stores",
+            ]
+
         for p in response_json:
             try:
-                product_ok = {k: v for k, v in p.items() if (k in [
-                    "product_name_fr",
-                    "code",
-                    "url",
-                    "categories",
-                    "nutrition_grades",
-                    "stores",
-                    ] and v != "") }
-                # printer = pprint.PrettyPrinter(indent=2)
-                # printer.pprint(product_ok)
-                # print("product_ok['stores']=", product_ok["stores"])
+                product_ok = {k:p[k] for k in required_keys}
+                # DEBUG
                 products_valids.append(product_ok)
             except KeyError:
-                pass
+                print("=====\nERROR\n=====")
+
         print("Registered products: {}/{}.".format(len(products_valids), products_total))
         return products_valids
