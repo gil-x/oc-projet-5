@@ -6,7 +6,7 @@ from config import *
 class DataManager:
     """Read and write the database."""
 
-    def __init__(self, user, password, host, database, charset="charset=utf8"):
+    def __init__(self, user, password, host, database, charset="charset=utf8mb4"):
         self.db = records.Database("mysql+pymysql://{}:{}@{}/{}?{}".format(
                 user,
                 password,
@@ -24,7 +24,7 @@ class DataManager:
         self.db.query("""
         CREATE TABLE IF NOT EXISTS Category (
             id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            name VARCHAR(100) NOT NULL,
+            category_name VARCHAR(100) NOT NULL,
             PRIMARY KEY (id)
         )
         ENGINE=INNODB;
@@ -37,16 +37,16 @@ class DataManager:
         self.db.query("""
         CREATE TABLE IF NOT EXISTS Product (
             id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            name VARCHAR(100) NOT NULL,
+            product_name VARCHAR(100) NOT NULL,
             barcode CHAR(13) NOT NULL,
             grade CHAR(1) NOT NULL,
             url VARCHAR(255) NOT NULL,
             store VARCHAR(255),
             categories VARCHAR(255),
-            category SMALLINT UNSIGNED NOT NULL,
+            category_id SMALLINT UNSIGNED NOT NULL,
             -- favorite CHAR(1) NOT NULL,
             CONSTRAINT fk_cat_product
-                FOREIGN KEY (category)
+                FOREIGN KEY (category_id)
                 REFERENCES Category(id),
             PRIMARY KEY (id)
         )
@@ -57,14 +57,14 @@ class DataManager:
         self.db.query("""
         CREATE TABLE IF NOT EXISTS Favorite (
             id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            name VARCHAR(100) NOT NULL,
+            product_name VARCHAR(100) NOT NULL,
             barcode CHAR(13) NOT NULL,
             grade CHAR(1) NOT NULL,
             url VARCHAR(255) NOT NULL,
             store VARCHAR(255),
-            category SMALLINT UNSIGNED NOT NULL,
+            category_id SMALLINT UNSIGNED NOT NULL,
             CONSTRAINT fk_cat_favorite
-                FOREIGN KEY (category)
+                FOREIGN KEY (category_id)
                 REFERENCES Category(id),
             PRIMARY KEY (id)
         )
@@ -74,10 +74,10 @@ class DataManager:
     def add_category(self, categories):
         for category in categories:
             self.db.query("""
-                INSERT INTO Category (name)
-                VALUES(:name)
+                INSERT INTO Category (category_name)
+                VALUES(:category_name)
                 """,
-                name=category
+                category_name=category
                 )
 
     def add_products(self, products, category):
@@ -91,16 +91,16 @@ class DataManager:
             print("self.categories:", self.categories)
             try:
                 self.db.query("""
-                    INSERT INTO Product (name, barcode, grade, url, store, category, categories)
-                    VALUES(:name, :barcode, :grade, :url, :store, :category, :categories)
+                    INSERT INTO Product (product_name, barcode, grade, url, store, category_id, categories)
+                    VALUES(:product_name, :barcode, :grade, :url, :store, :category_id, :categories)
                     """,
-                    name=product["product_name_fr"],
+                    product_name=product["product_name_fr"],
                     barcode=product["code"],
                     grade=product["nutrition_grades"],
                     url=product["url"],
                     store=product["stores"],
                     categories=product["categories"],
-                    category=self.categories.index(category) + 1
+                    category_id=self.categories.index(category) + 1
                     )
                 print("{} added.".format(product["product_name_fr"]))
                 valid_products += 1
@@ -110,8 +110,29 @@ class DataManager:
         print("Registered products: {}/{}".format(valid_products, total_products))
 
     def random_pick(self, number, category):
-        pass
+        # DEBUG:
+        # print("category arg in random_pick:", category, type(category))
+        # category_arg= int(category)
+        return self.db.query("""
+            SELECT *
+            FROM Product
+            INNER JOIN Category
+                ON Product.category_id = Category.id
+            WHERE grade = "e"
+                -- AND category_id = 2
+                AND Category.id = {}
+            ORDER BY RAND()
+            LIMIT 10;
+            """.format(category),
+            # category_arg= int(category)
+            )
 
+
+    def get_main_categories(self):
+        return self.db.query("""
+            SELECT * FROM Category;
+            """,
+            )
 
     def clean_products(self):
         self.db.query("""

@@ -10,6 +10,7 @@ class ApiFisherman:
     def __init__(self):
         pass
 
+    # récupérer spécifiquement des A B D et E
     def fetch_category(self, category):
         print("category in fetch_category:", category)
         args = {
