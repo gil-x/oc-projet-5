@@ -2,7 +2,7 @@
 
 from datamanager import DataManager
 from apifisherman import ApiFisherman
-from client import ClientUI
+from client import Client
 
 from config import *
 
@@ -11,7 +11,7 @@ class Main:
     def __init__(self):
         self.database = DataManager(USER, PASSWORD, HOST, DATABASE, CHARSET)
         self.fisher = ApiFisherman()
-        self.client = ClientUI(self.database)
+        self.client = Client(self.database)
         self.categories = CATEGORIES
 
     def update_data(self):

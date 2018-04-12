@@ -62,6 +62,7 @@ class DataManager:
             grade CHAR(1) NOT NULL,
             url VARCHAR(255) NOT NULL,
             store VARCHAR(255),
+            categories VARCHAR(255),
             category_id SMALLINT UNSIGNED NOT NULL,
             CONSTRAINT fk_cat_favorite
                 FOREIGN KEY (category_id)
@@ -81,7 +82,6 @@ class DataManager:
                 )
 
     def add_products(self, products, category):
-
         # DEBUG:
         printer = pprint.PrettyPrinter(indent=2)
         total_products = len(products)
@@ -102,12 +102,26 @@ class DataManager:
                     categories=product["categories"],
                     category_id=self.categories.index(category) + 1
                     )
-                print("{} added.".format(product["product_name_fr"]))
+                # print("{} added.".format(product["product_name_fr"]))
                 valid_products += 1
             except KeyError:
                 print("Key error")
 
         print("Registered products: {}/{}".format(valid_products, total_products))
+
+    def add_favorite(self, product):
+        self.db.query("""
+            INSERT INTO Favorite (product_name, barcode, grade, url, store, category_id, categories)
+            VALUES(:product_name, :barcode, :grade, :url, :store, :category_id, :categories)
+            """,
+            product_name=product["product_name"],
+            barcode=product["barcode"],
+            grade=product["grade"],
+            url=product["url"],
+            store=product["store"],
+            categories=product["categories"],
+            category_id=product["category_id"]
+            )
 
     def random_pick(self, number, category):
         # DEBUG:
@@ -133,6 +147,12 @@ class DataManager:
             SELECT * FROM Category;
             """,
             )
+
+    def get_favorites(self):
+        return self.db.query("""
+            SELECT *
+            FROM Favorite
+        """)
 
     def add_fulltext_index(self):
         self.db.query("""
