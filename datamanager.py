@@ -134,6 +134,32 @@ class DataManager:
             """,
             )
 
+    def add_fulltext_index(self):
+        self.db.query("""
+        ALTER TABLE Product
+        ADD FULLTEXT ind_categories (categories);
+        """
+        )
+
+    def find_substitutes(self, chosen_category, chosen_product_categories):
+        return self.db.query("""
+            SELECT *
+            FROM Product
+            WHERE
+            category_id = {}
+            AND (grade = 'a' OR grade = 'b')
+            AND MATCH categories
+            AGAINST ('{}')
+            LIMIT 5;
+            """.format(chosen_category, chosen_product_categories)
+            )
+
+
+
+
+
+
+
     def clean_products(self):
         self.db.query("""
         DELETE FROM Product

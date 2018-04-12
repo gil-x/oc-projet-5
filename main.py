@@ -25,7 +25,11 @@ class Main:
         #     self.database.add_products(self.fisher.fetch_category(category), category)
 
         # self.database.get_main_categories()
+
+        # self.database.add_fulltext_index()
+
         self.client.ask_category(self.database)
 
 main = Main()
+
 main.run()
