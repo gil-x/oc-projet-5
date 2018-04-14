@@ -1,4 +1,5 @@
 # import note
+# import pdb
 
 from datamanager import DataManager
 from apifisherman import ApiFisherman
@@ -27,6 +28,7 @@ class Main:
     def run(self):
         # self.database.get_main_categories()
         # self.database.add_fulltext_index()
+        pdb.set_trace()
         self.client.mainmenu()
 
 main = Main()

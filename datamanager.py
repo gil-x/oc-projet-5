@@ -166,17 +166,15 @@ class DataManager:
             SELECT *
             FROM Product
             WHERE
-            category_id = {}
+            category_id = :chosen_category
             AND (grade = 'a' OR grade = 'b')
             AND MATCH categories
-            AGAINST ('{}')
+            AGAINST (:chosen_product_categories)
             LIMIT 5;
-            """.format(chosen_category, chosen_product_categories)
+            """,
+            chosen_category= chosen_category,
+            chosen_product_categories= chosen_product_categories
             )
-
-
-
-
 
 
 
