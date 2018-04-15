@@ -1,5 +1,6 @@
 import records
 import pprint
+import note
 
 from config import *
 
@@ -30,6 +31,28 @@ class DataManager:
         ENGINE=INNODB;
         """)
 
+        # The products subcategories
+        self.db.query("""
+        CREATE TABLE IF NOT EXISTS Subcategory (
+            id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            subcategory_name VARCHAR(100) NOT NULL,
+            PRIMARY KEY (id)
+        )
+        ENGINE=INNODB;
+        """)
+
+        # Relation products-subcategories
+        self.db.query("""
+        CREATE TABLE IF NOT EXISTS JoinProductSubcategory (
+            id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            product_id SMALLINT,
+            subcategory_id SMALLINT,
+            PRIMARY KEY (id)
+        )
+        ENGINE=INNODB;
+        """)
+
+
         # The pool of products of grade A, B and E.
         # AJOUTER LES CALORIES !!!
         # AJOUTER LES CALORIES !!!
@@ -42,7 +65,7 @@ class DataManager:
             grade CHAR(1) NOT NULL,
             url VARCHAR(255) NOT NULL,
             store VARCHAR(255),
-            categories VARCHAR(255),
+            categories TEXT,
             category_id SMALLINT UNSIGNED NOT NULL,
             -- favorite CHAR(1) NOT NULL,
             CONSTRAINT fk_cat_product
@@ -62,7 +85,7 @@ class DataManager:
             grade CHAR(1) NOT NULL,
             url VARCHAR(255) NOT NULL,
             store VARCHAR(255),
-            categories VARCHAR(255),
+            categories TEXT,
             category_id SMALLINT UNSIGNED NOT NULL,
             CONSTRAINT fk_cat_favorite
                 FOREIGN KEY (category_id)
@@ -79,6 +102,24 @@ class DataManager:
                 VALUES(:category_name)
                 """,
                 category_name=category
+                )
+
+    def add_subcategory(self, products_collection):
+        subcategories_dump = []
+        for category_products, products in products_collection.items():
+            for product in products:
+                subcategories = product["categories"].split(",")
+                for subcategory in subcategories:
+                    subcategories_dump.append(subcategory.strip())
+        print("categories_dump length:", len(subcategories_dump))
+        subcategories = list(set(subcategories_dump))
+        print("categories length:", len(subcategories))
+        for subcategory in subcategories:
+            self.db.query("""
+                INSERT INTO Subcategory (subcategory_name)
+                VALUES(:subcategory_name)
+                """,
+                subcategory_name=subcategory
                 )
 
     def add_products(self, products_collection):

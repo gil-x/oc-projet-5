@@ -18,7 +18,9 @@ class Main:
         print("Tables builded")
         self.database.add_category(self.categories)
         print("Added categories")
-        self.database.add_products(self.fisher.get_products_from_api())
+        products = self.fisher.get_products_from_api()
+        self.database.add_subcategory(products)
+        self.database.add_products(products)
         # while self.categories:
         #     category = self.categories.pop(0)
         #     # self.database.add_products(self.fisher.fetch_category(category), category)

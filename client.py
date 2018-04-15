@@ -137,19 +137,19 @@ ERROR! You must pick a number between 1 and {}.""".format(choices_number))
         - Each product has a number index,
         - User can choose a product to have more informations or quit (use get_choice)
         """
-        pruducts = self.datamanager.get_favorites().as_dict()
-        for id, product in enumerate(pruducts):
+        products = self.datamanager.get_favorites().as_dict()
+        for id, product in enumerate(products):
             print("{}. {}".format(id + 1, product["product_name"]))
-        print("{}. RETURN TO MAIN MENU".format(len(pruducts) + 1))
+        print("{}. RETURN TO MAIN MENU".format(len(products) + 1))
         # pdb.set_trace()
         response = self.get_choice(
                 "See details?",
-                len(pruducts) + 1
+                len(products) + 1
             )
-        if response == len(pruducts) + 1:
+        if response == len(products) + 1:
             self.mainmenu()
         else:
-            self.display_favorite(pruducts[response - 1])
+            self.display_favorite(products[response - 1])
 
     def display_favorite(self, product):
         """
