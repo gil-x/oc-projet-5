@@ -25,6 +25,7 @@ class Main:
         self.database.add_fulltext_index()
 
     def update_checker(self):
+        pass
 
     def run(self):
         # print("{}".format(datetime.now()))
