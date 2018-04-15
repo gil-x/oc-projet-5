@@ -12,7 +12,7 @@ class ApiFisherman:
 
     # récupérer spécifiquement des A B D et E
     def fetch_category(self, category):
-        print("category in fetch_category:", category)
+        # print("category in fetch_category:", category)
         args = {
             'action': "process",
             'tagtype_0': "categories",
@@ -48,7 +48,7 @@ class ApiFisherman:
                 # DEBUG
                 products_valids.append(product_ok)
             except KeyError:
-                print("=====\nERROR\n=====")
+                pass
 
         print("Registered products: {}/{}.".format(len(products_valids), products_total))
         return products_valids

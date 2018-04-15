@@ -88,7 +88,7 @@ class DataManager:
         valid_products = 0
 
         for product in products:
-            print("self.categories:", self.categories)
+            # print("self.categories:", self.categories)
             try:
                 self.db.query("""
                     INSERT INTO Product (product_name, barcode, grade, url, store, category_id, categories)
@@ -180,8 +180,5 @@ class DataManager:
 
     def clean_products(self):
         self.db.query("""
-        DELETE FROM Product
-        WHERE grade IN ("D", "E")
-        )
-        ENGINE=INNODB;
+        DROP TABLE Product;
         """)
