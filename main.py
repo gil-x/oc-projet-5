@@ -1,9 +1,7 @@
-# import note
-# import pdb
-
 from datamanager import DataManager
 from apifisherman import ApiFisherman
 from client import Client
+# from datetime import datetime
 
 from config import *
 
@@ -24,11 +22,12 @@ class Main:
             category = self.categories.pop(0)
             print("category:", category)
             self.database.add_products(self.fisher.fetch_category(category), category)
+        self.database.add_fulltext_index()
+
+    def update_checker(self):
 
     def run(self):
-        # self.database.get_main_categories()
-        # self.database.add_fulltext_index()
-        pdb.set_trace()
+        # print("{}".format(datetime.now()))
         self.client.mainmenu()
 
 main = Main()

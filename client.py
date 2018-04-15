@@ -15,20 +15,20 @@ class Client:
 ===================================
      Welcome in openfoodfacts!
 ===================================
-1. Look for good food find_substitutes
+1. Look for good food substitutes
 2. See my favorites subsitutes
+3. QUIT
         """)
-        choice = self.get_choice("\n> What do you want to do?", 2)
+        choice = self.get_choice("\n> What do you want to do?", 3)
         if choice == 1:
             self.ask_category()
-        else:
+        elif choice == 2:
             self.display_favorites()
+        else:
+            pass
 
-    def ask_to_wait(self):
-        pass
 
     def ask_category(self):
-
         main_categories = self.datamanager.get_main_categories()
         for main_category in main_categories:
             print("{}. {}".format(
@@ -40,6 +40,7 @@ class Client:
             "\n> Which category do you want to explore?",
             len(main_categories))
         self.display_product()
+
 
     def display_product(self):
         self.ramdom_products = self.datamanager.random_pick(
@@ -56,12 +57,14 @@ class Client:
                 )
         self.ask_product_to_substitute()
 
+
     def ask_product_to_substitute(self):
         self.chosen_product = self.get_choice(
             "\n> Which product to you want to subsitute?",
             10)
         self.chosen_product = self.ramdom_products[self.chosen_product - 1]
         self.fetch_subsitute()
+
 
     def fetch_subsitute(self):
         chosen_product_categories = self.chosen_product["categories"]
@@ -70,16 +73,14 @@ class Client:
                 self.chosen_category,
                 chosen_product_categories
                 )
-        # for id, product in enumerate(substitutes):
-        #     print("{}. {}. {}".format(
-        #             id + 1,
-        #             product["product_name"],
-        #             product["grade"],
-        #             )
-        #         )
         self.roll_substitutes()
 
+
     def roll_substitutes(self):
+        """
+        Displays one by one each subsitute found
+        Each step user can register it in favorite, see next, quit (using get_choice)
+        """
         for product in self.substitutes:
             print("""
 {} is a good subsitute to {}, you can see more about this product at {}
@@ -111,7 +112,13 @@ class Client:
             elif response == 5:
                 break
 
+
     def get_choice(self, question, choices_number):
+        """
+        - Capture user choice in input
+        - waiting for a integer in specified range,
+        - if not, ask again until response is fine.
+        """
         print(question)
         while True:
             response = input("Your choice: ")
@@ -125,13 +132,49 @@ class Client:
 ERROR! You must pick a number between 1 and {}.""".format(choices_number))
 
     def display_favorites(self):
-        for id, product in enumerate(self.datamanager.get_favorites()):
+        """
+        - Display list of favorite products from table Favorites
+        - Each product has a number index,
+        - User can choose a product to have more informations or quit (use get_choice)
+        """
+        pruducts = self.datamanager.get_favorites().as_dict()
+        for id, product in enumerate(pruducts):
             print("{}. {}".format(id + 1, product["product_name"]))
+        print("{}. RETURN TO MAIN MENU".format(len(pruducts) + 1))
+        # pdb.set_trace()
         response = self.get_choice(
-                "See details",
-                len(self.datamanager.get_favorites()
-                )
+                "See details?",
+                len(pruducts) + 1
             )
+        if response == len(pruducts) + 1:
+            self.mainmenu()
+        else:
+            self.display_favorite(pruducts[response - 1])
 
-    def display_favorite(self):
-        pass
+    def display_favorite(self, product):
+        """
+        - Display details from product
+        - User can choose to return to favorites list or quit (use get_choice)
+        """
+        print("""
+{}, (grade {})
+- You can buy it at: {}
+- See more at: {}
+""".format(
+        product["product_name"],
+        product["grade"],
+        product["store"],
+        product["url"],
+        ))
+        print("""
+1. Look for good food substitutes
+2. Return to my favorites substitutes
+3. QUIT
+        """)
+        choice = self.get_choice("\n> What do you want to do?", 3)
+        if choice == 1:
+            self.ask_category()
+        elif choice == 2:
+            self.display_favorites()
+        else:
+            pass

@@ -16,3 +16,6 @@ CATEGORIES = ["Salty snacks", "Cheeses", "Beverage", "Sauces", "Biscuits"]
 
 # ADV_API = "https://world.openfoodfacts.org/cgi/search.pl"
 ADV_API = "https://fr.openfoodfacts.org/cgi/search.pl"
+
+# Last update
+DATE = None
