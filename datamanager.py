@@ -81,33 +81,35 @@ class DataManager:
                 category_name=category
                 )
 
-    def add_products(self, products, category):
+    def add_products(self, products_collection):
         # DEBUG:
         printer = pprint.PrettyPrinter(indent=2)
-        total_products = len(products)
+        # total_products = len(products)
         valid_products = 0
-
-        for product in products:
-            # print("self.categories:", self.categories)
-            try:
-                self.db.query("""
-                    INSERT INTO Product (product_name, barcode, grade, url, store, category_id, categories)
-                    VALUES(:product_name, :barcode, :grade, :url, :store, :category_id, :categories)
-                    """,
-                    product_name=product["product_name_fr"],
-                    barcode=product["code"],
-                    grade=product["nutrition_grades"],
-                    url=product["url"],
-                    store=product["stores"],
-                    categories=product["categories"],
-                    category_id=self.categories.index(category) + 1
-                    )
-                # print("{} added.".format(product["product_name_fr"]))
-                valid_products += 1
-            except KeyError:
-                print("Key error")
-
-        print("Registered products: {}/{}".format(valid_products, total_products))
+        print("I see {} categories.".format(len(products_collection.items())))
+        for category_products, products in products_collection.items():
+            category = category_products
+            for product in products:
+                # print("self.categories:", self.categories)
+                try:
+                    self.db.query("""
+                        INSERT INTO Product (product_name, barcode, grade, url, store, category_id, categories)
+                        VALUES(:product_name, :barcode, :grade, :url, :store, :category_id, :categories)
+                        """,
+                        product_name=product["product_name_fr"],
+                        barcode=product["code"],
+                        grade=product["nutrition_grades"],
+                        url=product["url"],
+                        store=product["stores"],
+                        categories=product["categories"],
+                        category_id=self.categories.index(category) + 1
+                        )
+                    # print("{} added.".format(product["product_name_fr"]))
+                    valid_products += 1
+                except KeyError:
+                    print("Key error")
+            print("FINE!")
+            # print("Registered products: {}/{}".format(valid_products, total_products))
 
     def add_favorite(self, product):
         self.db.query("""
