@@ -223,5 +223,8 @@ class DataManager:
 
     def clean_products(self):
         self.db.query("""
-        DROP TABLE Product;
+        DELETE FROM Product;
+        """)
+        self.db.query("""
+        DELETE FROM Subcategory;
         """)

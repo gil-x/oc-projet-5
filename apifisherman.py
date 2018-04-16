@@ -26,7 +26,7 @@ class ApiFisherman:
                     'tag_0': category,
                     'nutrition_grades': grade,
                     'json': 1,
-                    'page_size': 100,
+                    'page_size': 1000,
                     }
                 response = requests.get(ADV_API, params=args)
                 response_json = response.json()["products"]

@@ -13,7 +13,7 @@ class Main:
         self.client = Client(self.database)
         self.categories = CATEGORIES
 
-    def update_data(self):
+    def build_data(self):
         self.database.build_db()
         print("Tables builded")
         self.database.add_category(self.categories)
@@ -21,11 +21,16 @@ class Main:
         products = self.fisher.get_products_from_api()
         self.database.add_subcategory(products)
         self.database.add_products(products)
-        # while self.categories:
-        #     category = self.categories.pop(0)
-        #     # self.database.add_products(self.fisher.fetch_category(category), category)
-        #     self.database.add_products(self.fisher.get_products_from_api())
         self.database.add_fulltext_index()
+        self.client.mainmenu()
+
+    def update_data(self):
+        self.database.clean_products()
+        # self.database.build_db()
+        products = self.fisher.get_products_from_api()
+        self.database.add_subcategory(products)
+        self.database.add_products(products)
+        # self.database.add_fulltext_index()
         self.client.mainmenu()
 
     def update_checker(self):
@@ -37,6 +42,7 @@ class Main:
 Datas are a bit old, I'm going to refresh all of this!
 Please wait...
                 """)
+                self.update_data()
                 data_timestamp = open('data_timestamp.txt', 'w')
                 data_timestamp.write(current_time)
                 data_timestamp.close()
@@ -48,7 +54,7 @@ Please wait...
             new_data_timestamp = open('data_timestamp.txt', 'w', encoding="utf-8")
             new_data_timestamp.write(current_time)
             new_data_timestamp.close()
-            self.update_data()
+            self.build_data()
 
     def run(self):
         self.update_checker()
