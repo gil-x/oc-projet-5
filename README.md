@@ -10,7 +10,7 @@ This small Python application provide a simple use of openfoodfacts API.
 
 ## Fetch some good food
 
-You can navigate into shell menus to the following tasks:
+You can navigate into shell menus to do the following tasks:
 - choose a main category
 - then choose a product
 - the application will find 5 subsitutes, displaying one by one

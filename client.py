@@ -29,6 +29,7 @@ class Client:
 
 
     def ask_category(self):
+        print("\n___pick category___")
         main_categories = self.datamanager.get_main_categories()
         for main_category in main_categories:
             print("{}. {}".format(
@@ -43,16 +44,17 @@ class Client:
 
 
     def display_product(self):
+        print("\n___choose a product from {}___".format(
+                self.datamanager.categories[self.chosen_category - 1]))
         self.ramdom_products = self.datamanager.random_pick(
                 10,
                 self.chosen_category,
                 )
         for id, product in enumerate(self.ramdom_products):
-            print("{}. {} ({} - cat: {})".format(
+            print("{}. {} (grade {})".format(
                     id + 1,
                     product["product_name"],
-                    product["grade"],
-                    product["category_id"],
+                    product["grade"].upper(),
                     )
                 )
         self.ask_product_to_substitute()
@@ -83,21 +85,22 @@ class Client:
         """
         for product in self.substitutes:
             print("""
-{} is a good subsitute to {}, you can see more about this product at {}
+'{}' is a good subsitute to '{}',
+you can see more about this product at {}.
             """.format(
                     product["product_name"],
                     self.chosen_product["product_name"],
                     product["url"],
                     )
                 )
-            print("What do you want to do?")
+            print("\n> What do you want to do?")
             print(
 """
 1. save product to my favorites and return to main menu
 2. save product to my favorites and see more subsitutes
 3. see next product
-4. go to main menu
-5. quit
+4. GO TO MAIN MENU
+5. QUIT
 """)
             response = self.get_choice("", 5)
             if response == 1:
@@ -111,6 +114,9 @@ class Client:
                 self.mainmenu()
             elif response == 5:
                 break
+        print("\nNo subsitute found... :-(")
+        print("Let's play again!")
+        self.mainmenu()
 
 
     def get_choice(self, question, choices_number):
@@ -137,10 +143,11 @@ ERROR! You must pick a number between 1 and {}.""".format(choices_number))
         - Each product has a number index,
         - User can choose a product to have more informations or quit (use get_choice)
         """
+        print("\n___favorites___")
         products = self.datamanager.get_favorites().as_dict()
         for id, product in enumerate(products):
             print("{}. {}".format(id + 1, product["product_name"]))
-        print("{}. RETURN TO MAIN MENU".format(len(products) + 1))
+        print("{}. RETURN TO MAIN MENU\n".format(len(products) + 1))
         # pdb.set_trace()
         response = self.get_choice(
                 "See details?",
@@ -162,7 +169,7 @@ ERROR! You must pick a number between 1 and {}.""".format(choices_number))
 - See more at: {}
 """.format(
         product["product_name"],
-        product["grade"],
+        product["grade"].upper(),
         product["store"],
         product["url"],
         ))

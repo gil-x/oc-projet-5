@@ -3,7 +3,7 @@
 USER = "sqgil"
 PASSWORD = "pass"
 HOST = "localhost"
-DATABASE = "off_1"
+DATABASE = "off_2"
 CHARSET = "charset=utf8mb4"
 
 # Categories
